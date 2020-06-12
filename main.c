@@ -1,6 +1,8 @@
 #include "headers.h"
 
 #define RECV_BUF_SIZE 1024
+#define PORT "6969"
+#define BACKLOG 5
 
 int main(void)
 {
@@ -19,13 +21,17 @@ int main(void)
     hints.ai_family = AF_INET;
     hints.ai_flags = AI_PASSIVE;
     hints.ai_socktype = SOCK_STREAM;
-    if(getaddrinfo(NULL, "6969", &hints, &local) != 0) pr_err_mess("getaddrinfo");
+    if(getaddrinfo(NULL, PORT, &hints, &local) != 0) pr_err_mess("getaddrinfo");
 
     // socket, bind and listen
     loc_soc = socket(local->ai_family, local->ai_socktype, local->ai_protocol);
     if(loc_soc == -1) pr_err_mess("socket");
-    bind(loc_soc, local->ai_addr, local->ai_addrlen);
-    listen(loc_soc, 5);
+    if(bind(loc_soc, local->ai_addr, local->ai_addrlen) == -1) 
+    {
+        closesocket(loc_soc);
+        pr_err_mess("bind");
+    }
+    if(listen(loc_soc, BACKLOG) == -1) pr_err_mess("listen");
     
     
     socklen_t inbound_size = sizeof inbound;

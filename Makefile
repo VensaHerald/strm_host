@@ -6,4 +6,5 @@ main.o: main.c headers.h
 
 clean:
 	del *.o *.exe *.h.gch
+
 	
