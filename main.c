@@ -4,14 +4,17 @@
 #define PORT "6969"
 #define BACKLOG 5
 
+int accept_hand(int * parent_soc, const struct addrinfo parent_addr);
+
+
 int main(void)
 {
     
     WSADATA wsadata;
     struct addrinfo hints, *local;
-    struct sockaddr_storage inbound;
+    
     int loc_soc, acc_soc, rc;
-    char recv_buf[RECV_BUF_SIZE];
+    
     
     rc = WSAStartup(MAKEWORD(2,2), &wsadata);
     if (rc != 0) pr_err_mess("WSAStartup");
@@ -34,20 +37,6 @@ int main(void)
     if(listen(loc_soc, BACKLOG) == -1) pr_err_mess("listen");
     
     
-    socklen_t inbound_size = sizeof inbound;
-
-    acc_soc = accept(loc_soc, (struct sockaddr*)&inbound, &inbound_size);
-
-    
-    for(int i = 0; i < 10; i++)
-    {
-        recv(acc_soc, recv_buf, 30,0);
-        send(acc_soc, recv_buf, 30,0);
-    }
-
-    
-
-
 
     closesocket(acc_soc);
     closesocket(loc_soc);
@@ -58,6 +47,23 @@ int main(void)
     return 0;
 }
 
+
+int accept_hand(int * parent_soc, const struct addrinfo parent_addr)
+{
+    struct sockaddr_storage inbound;
+    socklen_t inbound_size = sizeof inbound;
+    acc_soc = accept(parent_soc, (struct sockaddr*)&inbound, &inbound_size);
+    char recv_buf[RECV_BUF_SIZE];
+
+        for(int i = 0; i < 10; i++)
+    {
+        recv(acc_soc, recv_buf, 30,0);
+        send(acc_soc, recv_buf, 30,0);
+    }
+
+
+    return 0;
+}
 
 int pr_err_mess(char *funcname)
 {
