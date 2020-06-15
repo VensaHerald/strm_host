@@ -4,7 +4,7 @@
 #define PORT "6969"
 #define BACKLOG 5
 
-int accept_hand(int * parent_soc, const struct addrinfo parent_addr);
+int accept_hand(int * parent_soc, const struct addrinfo *parent_addr);
 
 
 int main(void)
@@ -36,7 +36,7 @@ int main(void)
     }
     if(listen(loc_soc, BACKLOG) == -1) pr_err_mess("listen");
     
-    
+    accept_hand(&loc_soc, local);
 
     closesocket(acc_soc);
     closesocket(loc_soc);
@@ -48,11 +48,12 @@ int main(void)
 }
 
 
-int accept_hand(int * parent_soc, const struct addrinfo parent_addr)
+int accept_hand(int * parent_soc, const struct addrinfo *parent_addr)
 {
+    int acc_soc;
     struct sockaddr_storage inbound;
     socklen_t inbound_size = sizeof inbound;
-    acc_soc = accept(parent_soc, (struct sockaddr*)&inbound, &inbound_size);
+    acc_soc = accept(*parent_soc, (struct sockaddr*)&inbound, &inbound_size);
     char recv_buf[RECV_BUF_SIZE];
 
         for(int i = 0; i < 10; i++)
