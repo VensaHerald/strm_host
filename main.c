@@ -30,7 +30,7 @@ int main(void)
     // socket, bind and listen
     for (p = local; p != NULL; p = p->ai_next)
     {
-        loc_soc = socket(local->ai_family, local->ai_socktype, local->ai_protocol);
+        loc_soc = WSASocket(local->ai_family, local->ai_socktype, local->ai_protocol, NULL, NULL, 0);
         if(loc_soc == -1) pr_err_mess("socket");
 
 
